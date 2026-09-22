@@ -1,0 +1,19 @@
+## Interface: 120100, 120007, 120005, 120001
+## Title: TransmogSeller
+## Notes: Automatically sells gear up to your configured item level.
+## Notes-deDE: Automatischer Gear-Verkauf beim Händler
+## Notes-frFR: Vente automatique d’équipement aux marchands
+## Notes-esES: Venta automática de equipo a vendedores
+## Notes-itIT: Vendita automatica di equipaggiamento ai mercanti
+## Notes-ptBR: Venda automática de equipamento a comerciantes
+## Notes-ruRU: Автоматическая продажа экипировки торговцам
+## Notes-koKR: 상인에게 장비 자동 판매
+## Notes-zhCN: 向商人自动出售装备
+## Notes-zhTW: 向商人自動出售裝備
+## Notes-esMX: Venta automática de equipo a vendedores
+## Author: Custom
+## Version: 1.2.0
+## SavedVariablesPerCharacter: TransmogSellerDB
+Locales.lua
+TransmogSeller.lua
+Settings.lua
