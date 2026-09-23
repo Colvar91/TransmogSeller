@@ -14,6 +14,16 @@ local slots = {
     INVTYPE_WEAPONOFFHAND=true, INVTYPE_HOLDABLE=true, INVTYPE_RANGED=true,
     INVTYPE_RANGEDRIGHT=true, INVTYPE_THROWN=true, INVTYPE_TABARD=true,
 }
+ns.FilterKeys = {"armor", "weapons", "rings", "trinkets", "neck", "cloaks", "offhands", "cosmetics", "bound", "unbound"}
+local function Category(classID, equipLoc)
+    if equipLoc == "INVTYPE_FINGER" then return "rings" end
+    if equipLoc == "INVTYPE_TRINKET" then return "trinkets" end
+    if equipLoc == "INVTYPE_NECK" then return "neck" end
+    if equipLoc == "INVTYPE_CLOAK" then return "cloaks" end
+    if equipLoc == "INVTYPE_SHIELD" or equipLoc == "INVTYPE_HOLDABLE" then return "offhands" end
+    if equipLoc == "INVTYPE_BODY" or equipLoc == "INVTYPE_TABARD" then return "cosmetics" end
+    return classID == 2 and "weapons" or "armor"
+end
 local function Say(text)
     DEFAULT_CHAT_FRAME:AddMessage("|cff33ddbbTransmogSeller:|r " .. text)
 end
@@ -44,6 +54,8 @@ local function Eligible(bag, slot)
         return nil
     end
     if (classID ~= 2 and classID ~= 4) or not slots[equipLoc] then return false end
+    if not db.filters[Category(classID, equipLoc)] then return false end
+    if not db.filters[item.isBound and "bound" or "unbound"] then return false end
     if not price or price <= 0 then return false end
     -- Legendary / artifact / heirloom protection can explicitly be disabled.
     if db.protectSpecial and (not quality or quality >= 5) then return false end
@@ -195,6 +207,11 @@ frame:SetScript("OnEvent", function(_, event, name)
         if db.protectSets == nil then db.protectSets = true end
         if db.protectSpecial == nil then db.protectSpecial = true end
         db.keep = type(db.keep) == "table" and db.keep or {}
+        db.filters = type(db.filters) == "table" and db.filters or {}
+        -- Preserve explicit exclusions; new installations/upgrades retain prior behavior.
+        for _, key in ipairs(ns.FilterKeys) do
+            if type(db.filters[key]) ~= "boolean" then db.filters[key] = true end
+        end
         if type(db.batch) ~= "number" or db.batch < 1 or db.batch > 12 then db.batch = 8 end
         if type(db.maxLevel) ~= "number" or db.maxLevel < 1 or db.maxLevel > 9999 then db.maxLevel = nil end
         if not db.maxLevel then Say(L.READY) end

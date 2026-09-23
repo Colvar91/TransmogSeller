@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.0
+
+- Add General and Filters tabs with category and binding checkboxes.
+- Preserve item-level limits, protection rules and item exceptions.
+- Introduce a square purple-and-gold settings theme.
+- Translate all new controls and add original CurseForge branding.
+- Preserve saved settings and initialize new filters to previous behavior.
+
 ## 1.2.0
 
 - Automatically select UI and chat language from the WoW client locale.

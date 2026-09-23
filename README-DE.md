@@ -1,8 +1,8 @@
-# TransmogSeller 1.2.0
+# TransmogSeller 1.3.0
 
 Eigenständiges WoW-Retail-Addon zum automatischen Verkauf von Ausrüstung bis zu einer selbst gewählten Gegenstandsstufe. Keine WeakAuras-Abhängigkeit. Einstellungen werden pro Charakter gespeichert.
 
-## Sprachen und Update auf 1.2.0
+## Sprachen und Update auf 1.3.0
 
 Das Addon wählt seine Sprache automatisch über `GetLocale()` anhand der WoW-Clientsprache. Übersetzt sind Fenster, Buttons, Status- und Fehlermeldungen, Vorschau, Befehlshilfe und Addon-Beschreibung.
 
@@ -95,7 +95,7 @@ Während des Laufs Taschen möglichst nicht sortieren oder Items verschieben. Ge
 
 ## Prüfung und Grenzen
 
-32 Verhaltenstests mit Lua 5.1 und nachgebildeten WoW-APIs wurden für 14 Locale-Fälle ausgeführt (448 erfolgreiche Testläufe). Hinzu kommen Tests für den Fallback eines fehlenden Übersetzungseintrags und den Erhalt gespeicherter Einstellungen. Geprüft sind alle 55 Übersetzungseinträge pro Sprachfassung, Format-Platzhalter, UI-Beschriftungen, Verkaufsfilter, BoE/seelengebunden, volle Taschen, fehlende Daten, Wiederholungen, Abbruchbedingungen und Fensteraktionen. Der Nutzer hat den Verkauf der Vorgängerversion im Spiel bestätigt. Darstellung und Zeilenumbrüche der Übersetzungen wurden noch nicht im WoW-Client geprüft. Blizzard-Bestätigungsdialoge werden nicht automatisch bestätigt; solche Items können liegen bleiben.
+42 Verhaltenstests mit Lua 5.1 und nachgebildeten WoW-APIs wurden für 14 Locale-Fälle ausgeführt (588 erfolgreiche Testläufe). Hinzu kommen Tests für den Fallback eines fehlenden Übersetzungseintrags und den Erhalt gespeicherter Einstellungen. Geprüft sind alle 68 Übersetzungseinträge pro Sprachfassung, Format-Platzhalter, UI-Beschriftungen, Verkaufsfilter, BoE/seelengebunden, volle Taschen, fehlende Daten, Wiederholungen, Abbruchbedingungen und Fensteraktionen. Der Nutzer hat den Verkauf der Vorgängerversion im Spiel bestätigt. Darstellung und Zeilenumbrüche der Übersetzungen wurden noch nicht im WoW-Client geprüft. Blizzard-Bestätigungsdialoge werden nicht automatisch bestätigt; solche Items können liegen bleiben.
 
 Die Rückkauf-Liste des Händlers ist begrenzt: Bei einem großen Verkauf ist sie kein vollständiges Undo. Das Addon löscht keine Gegenstände; es verwendet ausschließlich den Händler-Verkaufsweg.
 
@@ -106,3 +106,14 @@ TOC-Kennungen für Retail 12.1.0 und mehrere 12.0-Versionen enthalten. Falls WoW
 - Vom Nutzer genannte Referenz: [Sell Old Content Armor and Weapons Button](https://wago.io/bpmz78RWf), v1.0.17 vom 25.07.2025, für 11.1.7 gekennzeichnet. Beschreibung: anklickbarer Verkauf im konfigurierten Itemlevel-Bereich, mit Throttle-Option. Keine Übernahme oder Ausführung des WeakAura-Codes.
 - [Blizzards exportierte Container-API-Dokumentation](https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_APIDocumentationGenerated/ContainerDocumentation.lua)
 - [Blizzards exportierte Item-API-Dokumentation](https://github.com/Gethe/wow-ui-source/blob/live/Interface/AddOns/Blizzard_APIDocumentationGenerated/ItemDocumentation.lua)
+
+
+## Neu in 1.3.0: Filter und Design
+
+Das Fenster unter `/ts` hat zwei Tabs: **Allgemein** und **Filter**. Es verwendet eckige Konturen, einen dunkellila Hintergrund und goldene Schrift mit violetten Hover- und Tab-Markierungen.
+
+Im Filter-Tab bedeutet ein Haken **darf verkauft werden**, kein Haken **behalten**. Acht Kategorien sind separat wählbar: Rüstung, Waffen, Ringe, Schmuckstücke, Halsketten, Umhänge, Schilde/gehaltene Nebenhand sowie Hemden/Wappenröcke. Nebenhandwaffen gehören zur Kategorie Waffen. Zusätzlich lassen sich seelengebundene und ungebundene Gegenstände (einschließlich BoE) getrennt zulassen.
+
+Alle Filter sind beim ersten Laden aktiviert, damit ein Update das bisherige Verkaufsverhalten erhält. Später gespeicherte Ausschlüsse bleiben erhalten. Die Itemlevel-Grenze, Qualitäts- und Set-Schutz sowie konkrete Item-Ausnahmen haben weiterhin Vorrang. Filter erlauben also keinen Verkauf oberhalb der Grenze oder entgegen einer Schutzregel. Änderungen mit **Speichern** übernehmen. Tab-Wechsel erhalten ungespeicherte Eingaben; Schließen verwirft sie. Item-Ausnahmen befinden sich ebenfalls im Filter-Tab und gelten weiterhin sofort.
+
+Das CurseForge-Logo liegt separat im Branding-Paket und ist keine Voraussetzung zum Ausführen des Addons. Alle neuen Beschriftungen sind in den zehn Sprachfassungen enthalten. Das neue Fenster wurde außerhalb des WoW-Clients funktional getestet; eine Live-Prüfung der Darstellung steht aus.

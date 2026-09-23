@@ -2,11 +2,13 @@
 
 Automatically sells armor, weapons, rings and trinkets at merchants up to your configured item level, including soulbound and unbound Bind-on-Equip items. Standalone Retail addon; no WeakAuras dependency.
 
-[Deutsch](README-DE.md) · [Download version 1.2.0](https://github.com/Colvar91/TransmogSeller/releases/tag/v1.2.0)
+[Deutsch](README-DE.md) · [Download 1.3.0](https://github.com/Colvar91/TransmogSeller/releases/tag/v1.3.0)
+
+![TransmogSeller logo](branding/TransmogSeller-CurseForge.png)
 
 ## Install or update
 
-Download `TransmogSeller-1.2.0.zip` from Releases and extract it. The release ZIP contains the correctly named addon folder. If using GitHub’s source-code ZIP instead, rename its top-level folder to `TransmogSeller`.
+Download the addon ZIP from Releases; it contains the correctly named folder. If using GitHub’s source ZIP instead, rename the top-level folder to `TransmogSeller`.
 
 Copy the `TransmogSeller` folder into `World of Warcraft/_retail_/Interface/AddOns/`, then run `/reload` or restart WoW. When updating from TransmogSeller 1.1.0, overwrite the addon files; character settings and item exceptions are preserved. Include the new `Locales.lua` and updated TOC file.
 
@@ -51,8 +53,17 @@ Actual speed depends on WoW and server responses. Failed requests are retried at
 
 ## Validation
 
-32 Lua 5.1 behavior tests passed for each of 14 locale cases (448 runs), plus missing-key fallback and saved-settings preservation tests. All 55 strings per language, format placeholders and UI labels were checked. These use mocked WoW APIs. Selling in the previous version was confirmed by the user; translated layout and wrapping have not been visually tested in the live WoW client.
+42 Lua 5.1 behavior tests passed for each of 14 locale cases (588 runs), plus missing-key fallback and saved-settings preservation tests. All 68 strings per language, format placeholders and UI labels were checked. These use mocked WoW APIs. Selling in the previous version was confirmed by the user; translated layout and wrapping have not been visually tested in the live WoW client.
+
+
+## New in 1.3.0: filters and visual theme
+
+The `/ts` window now has **General** and **Filters** tabs with square purple controls and gold text. Checked filters allow selling; unchecked filters retain those items. Eight categories cover armor, weapons, rings, trinkets, necklaces, cloaks, shields/held off-hands, and shirts/tabards. Off-hand weapons belong to Weapons. Separate checkboxes allow soulbound and unbound items (including BoE).
+
+Filters default to enabled on upgrade, preserving previous behavior. Existing saved exclusions persist. The item-level limit, protection options and item-ID exceptions always take precedence. Click **Save** to apply filters; switching tabs retains draft edits and closing the window discards them. Item exceptions now live in the Filters tab and still apply immediately.
+
+The new controls are translated in all ten language variants. The CurseForge logo is a separate branding asset and is not required to run the addon. The redesigned window has not yet been visually verified in the live WoW client.
 
 ## Development tests
 
-Install the test dependency with `python -m pip install -r tests/requirements.txt`, then run `python tests/test_addon.py`. Tests use Lua 5.1 and mocked WoW APIs. No test dependencies are needed to run the addon in WoW.
+Run `python -m pip install -r tests/requirements.txt`, then `python tests/test_addon.py`. Dependencies are only needed for development tests.

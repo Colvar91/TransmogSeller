@@ -13,7 +13,7 @@ DEFAULT_CHAT_FRAME={AddMessage=function(_,s) table.insert(messages,s) end}
 widgets={}; UISpecialFrames={}; UIParent={}
 local methods={}
 local noop=function() end
-for _,k in ipairs({'SetPoint','SetSize','SetWidth','SetHeight','SetJustifyH','SetFontObject','SetAutoFocus','SetNumeric','SetMaxLetters','ClearFocus','SetFrameStrata','SetClampedToScreen','EnableMouse','SetMovable','RegisterForDrag','StartMoving','StopMovingOrSizing','SetBackdrop','SetBackdropColor','SetBackdropBorderColor','RegisterEvent'}) do methods[k]=noop end
+for _,k in ipairs({'SetTextColor','SetFontString','SetTextInsets','SetCheckedTexture','SetPoint','SetSize','SetWidth','SetHeight','SetJustifyH','SetFontObject','SetAutoFocus','SetNumeric','SetMaxLetters','ClearFocus','SetFrameStrata','SetClampedToScreen','EnableMouse','SetMovable','RegisterForDrag','StartMoving','StopMovingOrSizing','SetBackdrop','SetBackdropColor','SetBackdropBorderColor','RegisterEvent'}) do methods[k]=noop end
 function methods:SetText(s) self.text=s end
 function methods:GetText() return self.text or '' end
 function methods:SetChecked(b) self.checked=b end
@@ -124,6 +124,51 @@ cmd('off');open();cmd('sell');cmd('on');cmd('keep invalid');cmd('keep 77');cmd('
 cmd('unkeep 77');cmd('sets invalid');cmd('sets on');cmd('special off');cmd('batch 0');
 cmd('batch 3');cmd('help');cmd('stop');assert(#messages>15)
 '''
+cases['tabs preserve drafts until save'] = '''
+cmd('');local w=TransmogSellerSettings;assert(w.panels.general:IsShown() and not w.panels.filters:IsShown());
+w.level:SetText('100');click(L.TAB_FILTERS);assert(w.panels.filters:IsShown() and not w.panels.general:IsShown());
+w.filters.rings:SetChecked(false);click(L.TAB_GENERAL);assert(w.level:GetText()=='100');
+click(L.SAVE_BUTTON);assert(TransmogSellerDB.maxLevel==100 and not TransmogSellerDB.filters.rings)
+'''
+cases['category filters include only selected gear'] = '''
+local entries={{'armor','INVTYPE_CHEST',4},{'weapons','INVTYPE_WEAPON',2},{'rings','INVTYPE_FINGER',4},
+{'trinkets','INVTYPE_TRINKET',4},{'neck','INVTYPE_NECK',4},{'cloaks','INVTYPE_CLOAK',4},
+{'offhands','INVTYPE_SHIELD',4},{'cosmetics','INVTYPE_TABARD',4}}
+for i,v in ipairs(entries) do add(i,{equip=v[2],class=v[3]});TransmogSellerDB.filters[v[1]]=i%2==0 end
+cmd('ilvl 100');open();advance(5);assert(#sales==4);for _,id in ipairs(sales) do assert(id%2==0) end
+'''
+cases['held offhand and offhand weapon are distinct'] = '''
+add(1,{equip='INVTYPE_HOLDABLE'});add(2,{equip='INVTYPE_WEAPONOFFHAND',class=2});
+TransmogSellerDB.filters.offhands=false;cmd('ilvl 100');open();advance(5);assert(#sales==1 and sales[1]==2)
+'''
+cases['binding filter excludes soulbound'] = '''
+add(1,{isBound=true});add(2,{isBound=false});TransmogSellerDB.filters.bound=false;
+cmd('ilvl 100');open();advance(5);assert(#sales==1 and sales[1]==2)
+'''
+cases['binding filter excludes unbound'] = '''
+add(1,{isBound=true});add(2,{isBound=false});TransmogSellerDB.filters.unbound=false;
+cmd('ilvl 100');open();advance(5);assert(#sales==1 and sales[1]==1)
+'''
+cases['all filters off sells nothing'] = '''
+add(1);for key in pairs(TransmogSellerDB.filters) do TransmogSellerDB.filters[key]=false end
+cmd('ilvl 100');open();advance(5);assert(#sales==0)
+'''
+cases['filters cannot override protection'] = '''
+add(1,{set=true});add(2,{quality=5});add(3,{level=101});add(4);cmd('keep 4');
+cmd('ilvl 100');open();advance(5);assert(#sales==0)
+'''
+cases['filter reload preserves exclusions and initializes new keys'] = '''
+TransmogSellerDB.filters={rings=false,bound=false};event(nil,'ADDON_LOADED','TransmogSeller');
+assert(not TransmogSellerDB.filters.rings and not TransmogSellerDB.filters.bound and TransmogSellerDB.filters.armor)
+'''
+cases['filter save cancels active selling'] = '''
+add(1);cmd('ilvl 100');open();cmd('');click(L.TAB_FILTERS);
+TransmogSellerSettings.filters.armor:SetChecked(false);click(L.SAVE_BUTTON);advance(5);assert(#sales==0)
+'''
+cases['unsaved filter changes are discarded'] = '''
+cmd('');TransmogSellerSettings.filters.rings:SetChecked(false);cmd('');cmd('');
+assert(TransmogSellerSettings.filters.rings:GetChecked() and TransmogSellerDB.filters.rings)
+'''
 for name, code in list(cases.items()):
     for german, key in {'Speichern':'SAVE_BUTTON', 'Schützen':'KEEP_BUTTON',
                         'Freigeben':'RELEASE_BUTTON', 'Vorschau':'PREVIEW_BUTTON',
@@ -149,7 +194,7 @@ for locale in list(data)+list(aliases):
     texts = [widget.text for widget in lua.globals().widgets.values() if widget.text]
     for key in ('AUTO_LABEL','LEVEL_LABEL','SETS_LABEL','SPECIAL_LABEL','SAVE_BUTTON','STOP_BUTTON'):
         assert data[target][key] in texts, (locale,key)
-    print('PASS',locale,':',len(cases),'behavior tests; 55 strings, formatting and visible labels')
+    print('PASS',locale,':',len(cases),'behavior tests;',len(data[target]),'strings, formatting and labels')
 
 # Missing individual translations fall back independently to English.
 locale_source = (ROOT / 'Locales.lua').read_text(encoding='utf-8')
